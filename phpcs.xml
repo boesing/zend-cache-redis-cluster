@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<ruleset name="Doctrine coding standard">
+    <rule ref="Doctrine"/>
+
+    <!-- Paths to check -->
+    <file>src</file>
+
+</ruleset>

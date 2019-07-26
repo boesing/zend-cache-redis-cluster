@@ -1,0 +1,40 @@
+{
+    "name": "boesing/zend-cache-redis-cluster",
+    "description": "Redis Cluster support for zend-cache",
+    "authors": [
+        {
+            "name": "Maximilian Bösing",
+            "email": "max@boesing.email"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Boesing\\ZendCacheRedisCluster\\": "src/"
+        }
+    },
+    "require": {
+        "php": "^7.3",
+        "ext-redis": "^4.3",
+        "squizlabs/php_codesniffer": "^3.4",
+        "webmozart/assert": "^1.4",
+        "zendframework/zend-cache": "^2.8"
+    },
+    "require-dev": {
+        "cache/integration-tests": "^0.16.0",
+        "phpunit/phpunit": "^8.2",
+        "zendframework/zend-serializer": "^2.9",
+        "doctrine/coding-standard": "^6.0"
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "scripts": {
+        "check": [
+            "@cs-check",
+            "@test"
+        ],
+        "cs-check": "phpcs",
+        "cs-fix": "phpcbf",
+        "test": "phpunit --colors=always"
+    }
+}
