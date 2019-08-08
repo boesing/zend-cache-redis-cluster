@@ -1,13 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
-         bootstrap="test/bootstrap.php"
+         bootstrap="vendor/autoload.php"
          colors="true"
          convertErrorsToExceptions="true"
          convertDeprecationsToExceptions="false">
     <testsuites>
-        <testsuite name="zend-cache Redis Array Extension Test Suite">
-            <directory>./test</directory>
+        <testsuite name="unit">
+            <directory>./tests</directory>
+        </testsuite>
+        <testsuite name="integration">
+            <directory>./integration</directory>
         </testsuite>
     </testsuites>
 
@@ -22,10 +25,6 @@
         <!-- E_ALL & ~E_DEPRECATED & ~E_USER_DEPRECATED -->
         <ini name="error_reporting" value="8191" />
         <ini name="display_startup_errors" value="On" />
-        <env name="TESTS_ZEND_CACHE_REDIS_HOST" value="127.0.0.1"/>
-        <env name="TESTS_ZEND_CACHE_REDIS_PORT" value="6379"/>
-        <env name="TESTS_ZEND_CACHE_REDIS_ENABLED" value="true"/>
-        <env name="TESTS_ZEND_CACHE_REDIS_PASSWORD" value=""/>
-        <env name="TESTS_ZEND_CACHE_REDIS_DATABASE" value="0"/>
+        <env name="TESTS_ZEND_CACHE_REDIS_CLUSTER_NODENAME" value="cache"/>
     </php>
 </phpunit>

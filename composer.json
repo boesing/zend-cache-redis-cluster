@@ -7,26 +7,41 @@
             "email": "max@boesing.email"
         }
     ],
-    "autoload": {
-        "psr-4": {
-            "Boesing\\ZendCacheRedisCluster\\": "src/"
-        }
-    },
     "require": {
         "php": "^7.3",
-        "ext-redis": "^4.3",
+        "ext-redis": "^5.0",
         "squizlabs/php_codesniffer": "^3.4",
         "webmozart/assert": "^1.4",
         "zendframework/zend-cache": "^2.8"
     },
     "require-dev": {
         "cache/integration-tests": "^0.16.0",
-        "phpunit/phpunit": "^8.2",
-        "zendframework/zend-serializer": "^2.9",
-        "doctrine/coding-standard": "^6.0"
+        "doctrine/coding-standard": "^6.0",
+        "phpunit/phpunit": "^7.5",
+        "zendframework/zend-serializer": "^2.9"
     },
     "config": {
         "sort-packages": true
+    },
+    "autoload": {
+        "psr-4": {
+            "Boesing\\ZendCacheRedisCluster\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Boesing\\ZendCacheRedisClusterTest\\": "tests/",
+            "Boesing\\ZendCacheRedisClusterIntegration\\": "integration/"
+        },
+        "files": [
+            "autoload/phpunit-backward-compatiblities.php"
+        ]
+    },
+    "archive": {
+        "exclude": [
+            "tests/",
+            "integration/"
+        ]
     },
     "scripts": {
         "check": [

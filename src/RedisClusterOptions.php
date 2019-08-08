@@ -4,38 +4,62 @@ declare(strict_types=1);
 
 namespace Boesing\ZendCacheRedisCluster;
 
+use Boesing\ZendCacheRedisCluster\Exception\InvalidConfiguration;
 use Webmozart\Assert\Assert;
 use Zend\Cache\Storage\Adapter\AdapterOptions;
+use function array_keys;
 
 final class RedisClusterOptions extends AdapterOptions
 {
-    private $namespaceSeparator = ':';
+    /** @var string */
+    protected $namespaceSeparator = ':';
 
     /** @var string */
-    private $nodename = '';
+    protected $nodename = '';
 
-    /** @var float|null */
-    private $timeout;
+    /** @var float */
+    protected $timeout = 0.0;
 
-    /** @var float|null */
-    private $readTimeout;
+    /** @var float */
+    protected $readTimeout = 0.0;
 
     /** @var bool */
-    private $persistent;
+    protected $persistent = false;
+
+    /** @var array<int,string> */
+    protected $seeds = [];
+
+    /** @var string */
+    protected $version = '';
+
+    /** @var array<int,mixed> */
+    protected $libOptions = [];
 
     /**
-     * @var array<int,string>
+     * @inheritDoc
      */
-    private $seeds;
-
-    public function setTimeout(?float $timeout) : void
+    public function __construct($options = null)
     {
-        $this->timeout = $timeout;
+        parent::__construct($options);
+        if (! $this->hasNodename() && empty($this->seeds)) {
+            throw InvalidConfiguration::fromMissingRequiredValues();
+        }
+
+        if ($this->hasNodename() && ! empty($this->seeds)) {
+            throw InvalidConfiguration::nodenameAndSeedsProvided();
+        }
     }
 
-    public function setReadTimeout(?float $readTimeout) : void
+    public function setTimeout(float $timeout) : void
+    {
+        $this->timeout = $timeout;
+        $this->triggerOptionEvent('timeout', $timeout);
+    }
+
+    public function setReadTimeout(float $readTimeout) : void
     {
         $this->readTimeout = $readTimeout;
+        $this->triggerOptionEvent('read_timeout', $readTimeout);
     }
 
     public function setPersistent(bool $persistent) : void
@@ -71,14 +95,15 @@ final class RedisClusterOptions extends AdapterOptions
     public function setNodename(string $nodename) : void
     {
         $this->nodename = $nodename;
+        $this->triggerOptionEvent('nodename', $nodename);
     }
 
-    public function timeout() : ?float
+    public function timeout() : float
     {
         return $this->timeout;
     }
 
-    public function readTimeout() : ?float
+    public function readTimeout() : float
     {
         return $this->readTimeout;
     }
@@ -88,14 +113,52 @@ final class RedisClusterOptions extends AdapterOptions
         return $this->persistent;
     }
 
-    public function seeds(): array
+    /**
+     * @return string[]
+     */
+    public function seeds() : array
     {
         return $this->seeds;
     }
 
-    public function setSeeds(array $seeds): void
+    /**
+     * @param string[] $seeds
+     */
+    public function setSeeds(array $seeds) : void
     {
+        Assert::notEmpty($seeds);
         Assert::allString($seeds);
         $this->seeds = $seeds;
+
+        $this->triggerOptionEvent('seeds', $seeds);
+    }
+
+    public function setRedisVersion(string $version) : void
+    {
+        Assert::stringNotEmpty($version);
+        Assert::regex($version, '#^\d+\.\d+#');
+        $this->version = $version;
+    }
+
+    public function redisVersion() : string
+    {
+        return $this->version;
+    }
+
+    /**
+     * @param array<int,mixed> $options
+     */
+    public function setLibOptions(array $options) : void
+    {
+        Assert::allInteger(array_keys($options));
+        $this->libOptions = $options;
+    }
+
+    /**
+     * @return array<int,mixed>
+     */
+    public function libOptions() : array
+    {
+        return $this->libOptions;
     }
 }
