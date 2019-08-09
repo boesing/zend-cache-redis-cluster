@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Boesing\ZendCacheRedisClusterIntegration\SimpleCache;
@@ -6,14 +7,11 @@ namespace Boesing\ZendCacheRedisClusterIntegration\SimpleCache;
 use Boesing\ZendCacheRedisClusterIntegration\RedisClusterStorageCreationTrait;
 use Cache\IntegrationTests\SimpleCacheTest;
 use Psr\SimpleCache\CacheInterface;
+use RedisCluster;
 use Zend\Cache\Psr\SimpleCache\SimpleCacheDecorator;
 
-/**
- * @author Maximilian Bösing <max.boesing@check24.de>
- */
-final class RedisClusterIntegrationTest extends SimpleCacheTest
+final class RedisClusterWithPhpSerializerTest extends SimpleCacheTest
 {
-
     use RedisClusterStorageCreationTrait;
 
     /**
@@ -21,7 +19,7 @@ final class RedisClusterIntegrationTest extends SimpleCacheTest
      */
     public function createSimpleCache()
     {
-        $storage = $this->createRedisClusterStorage();
+        $storage = $this->createRedisClusterStorage(RedisCluster::SERIALIZER_PHP, false);
 
         return new SimpleCacheDecorator($storage);
     }

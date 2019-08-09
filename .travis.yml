@@ -42,7 +42,8 @@ install:
     -p 7006:7006 -p 7007:7007 -p 7008:7008 \
     --name redis-cluster \
     karelcemus/redis-cluster:latest
-  - printf "no\nno\n" | pecl install --force redis
+  - pecl install igbinary
+  - printf "yes\nyes\n" | pecl install --force redis
   - phpenv config-add .ci/redis-cluster.ini ;
   - travis_retry composer install $COMPOSER_ARGS
   - if [[ $DEPS == 'latest' ]]; then travis_retry composer update $COMPOSER_ARGS ; fi

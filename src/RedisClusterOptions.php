@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace Boesing\ZendCacheRedisCluster;
 
-use Boesing\ZendCacheRedisCluster\Exception\InvalidConfiguration;
+use Boesing\ZendCacheRedisCluster\Exception\InvalidConfigurationException;
 use Webmozart\Assert\Assert;
 use Zend\Cache\Storage\Adapter\AdapterOptions;
+
 use function array_keys;
 
 final class RedisClusterOptions extends AdapterOptions
@@ -35,6 +36,9 @@ final class RedisClusterOptions extends AdapterOptions
     /** @var array<int,mixed> */
     protected $libOptions = [];
 
+    /** @var RedisClusterResourceManager|null */
+    private $resourceManager;
+
     /**
      * @inheritDoc
      */
@@ -42,11 +46,11 @@ final class RedisClusterOptions extends AdapterOptions
     {
         parent::__construct($options);
         if (! $this->hasNodename() && empty($this->seeds)) {
-            throw InvalidConfiguration::fromMissingRequiredValues();
+            throw InvalidConfigurationException::fromMissingRequiredValues();
         }
 
         if ($this->hasNodename() && ! empty($this->seeds)) {
-            throw InvalidConfiguration::nodenameAndSeedsProvided();
+            throw InvalidConfigurationException::nodenameAndSeedsProvided();
         }
     }
 
@@ -155,10 +159,24 @@ final class RedisClusterOptions extends AdapterOptions
     }
 
     /**
-     * @return array<int,mixed>
+     * @return array<int,int>
      */
     public function libOptions() : array
     {
         return $this->libOptions;
+    }
+
+    public function setResourceManager(RedisResourceManagerInterface $resourceManager) : void
+    {
+        $this->resourceManager = $resourceManager;
+    }
+
+    public function getResourceManager() : RedisResourceManagerInterface
+    {
+        if ($this->resourceManager) {
+            return $this->resourceManager;
+        }
+
+        return $this->resourceManager = new RedisClusterResourceManager($this);
     }
 }

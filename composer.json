@@ -16,8 +16,8 @@
     },
     "require-dev": {
         "cache/integration-tests": "^0.16.0",
-        "doctrine/coding-standard": "^6.0",
         "phpunit/phpunit": "^7.5",
+        "zendframework/zend-coding-standard": "^2.0",
         "zendframework/zend-serializer": "^2.9"
     },
     "config": {
@@ -43,6 +43,8 @@
             "integration/"
         ]
     },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
     "scripts": {
         "check": [
             "@cs-check",

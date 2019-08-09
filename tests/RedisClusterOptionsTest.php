@@ -1,29 +1,26 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Boesing\ZendCacheRedisClusterTest;
 
-use Boesing\ZendCacheRedisCluster\Exception\InvalidConfiguration;
+use Boesing\ZendCacheRedisCluster\Exception\InvalidConfigurationException;
 use Boesing\ZendCacheRedisCluster\RedisClusterOptions;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 
-/**
- * @author Maximilian Bösing <max.boesing@check24.de>
- */
 final class RedisClusterOptionsTest extends TestCase
 {
-
     /**
      * @test
      */
     public function canHandleOptionsWithNodename()
     {
         $options = new RedisClusterOptions([
-            'nodename' => 'foo',
-            'timeout' => 1.0,
-            'read_timeout' => 2.0,
-            'persistent' => false,
+            'nodename'      => 'foo',
+            'timeout'       => 1.0,
+            'read_timeout'  => 2.0,
+            'persistent'    => false,
             'redis_version' => '1.0',
         ]);
 
@@ -40,10 +37,10 @@ final class RedisClusterOptionsTest extends TestCase
     public function canHandleOptionsWithSeeds()
     {
         $options = new RedisClusterOptions([
-            'seeds' => ['localhost:1234'],
-            'timeout' => 1.0,
-            'read_timeout' => 2.0,
-            'persistent' => false,
+            'seeds'         => ['localhost:1234'],
+            'timeout'       => 1.0,
+            'read_timeout'  => 2.0,
+            'persistent'    => false,
             'redis_version' => '1.0',
         ]);
 
@@ -59,10 +56,10 @@ final class RedisClusterOptionsTest extends TestCase
      */
     public function willDetectSeedsAndNodenameConfiguration()
     {
-        $this->expectException(InvalidConfiguration::class);
+        $this->expectException(InvalidConfigurationException::class);
         $this->expectExceptionMessage('Please provide either `nodename` or `seeds` configuration, not both.');
         new RedisClusterOptions([
-            'seeds' => ['localhost:1234'],
+            'seeds'    => ['localhost:1234'],
             'nodename' => 'foo',
         ]);
     }
@@ -91,7 +88,7 @@ final class RedisClusterOptionsTest extends TestCase
 
     public function willDetectMissingRequiredValues()
     {
-        $this->expectException(InvalidConfiguration::class);
+        $this->expectException(InvalidConfigurationException::class);
         $this->expectExceptionMessage('Missing either `nodename` or `seeds`.');
         new RedisClusterOptions();
     }

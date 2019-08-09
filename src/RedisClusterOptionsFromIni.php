@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace Boesing\ZendCacheRedisCluster;
 
-use Boesing\ZendCacheRedisCluster\Exception\InvalidConfiguration;
+use Boesing\ZendCacheRedisCluster\Exception\InvalidConfigurationException;
 use Webmozart\Assert\Assert;
+
 use function ini_get;
 use function parse_str;
 
@@ -24,7 +25,7 @@ final class RedisClusterOptionsFromIni
     {
         $seedsConfiguration = ini_get('redis.clusters.seeds') ?: '';
         if (! $seedsConfiguration) {
-            throw InvalidConfiguration::fromMissingSeedsConfiguration();
+            throw InvalidConfigurationException::fromMissingSeedsConfiguration();
         }
 
         $seedsByNodename = [];
@@ -63,7 +64,7 @@ final class RedisClusterOptionsFromIni
     {
         $seeds = $this->seedsByNodename[$nodename] ?? [];
         if (! $seeds) {
-            throw InvalidConfiguration::fromInvalidSeedsConfiguration($nodename);
+            throw InvalidConfigurationException::fromInvalidSeedsConfiguration($nodename);
         }
 
         return $seeds;

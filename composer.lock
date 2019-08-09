@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a61e744faefc6ca07a0e66340ab0c767",
+    "content-hash": "9c4ce7a68868b314e2ce7a95ae0f796e",
     "packages": [
         {
             "name": "container-interop/container-interop",
@@ -747,9 +747,9 @@
             "authors": [
                 {
                     "name": "Franck Nijhof",
+                    "role": "Developer / IT Manager",
                     "email": "franck.nijhof@dealerdirect.com",
-                    "homepage": "http://www.frenck.nl",
-                    "role": "Developer / IT Manager"
+                    "homepage": "http://www.frenck.nl"
                 }
             ],
             "description": "PHP_CodeSniffer Standards Composer Installer Plugin",
@@ -772,67 +772,6 @@
                 "tests"
             ],
             "time": "2018-10-26T13:21:45+00:00"
-        },
-        {
-            "name": "doctrine/coding-standard",
-            "version": "6.0.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/doctrine/coding-standard.git",
-                "reference": "d33f69eb98b25aa51ffe3a909f0ec77000af4701"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/coding-standard/zipball/d33f69eb98b25aa51ffe3a909f0ec77000af4701",
-                "reference": "d33f69eb98b25aa51ffe3a909f0ec77000af4701",
-                "shasum": ""
-            },
-            "require": {
-                "dealerdirect/phpcodesniffer-composer-installer": "^0.5.0",
-                "php": "^7.1",
-                "slevomat/coding-standard": "^5.0",
-                "squizlabs/php_codesniffer": "^3.4.0"
-            },
-            "type": "phpcodesniffer-standard",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "6.0.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Doctrine\\Sniffs\\": "lib/Doctrine/Sniffs"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Benjamin Eberlei",
-                    "email": "kontakt@beberlei.de"
-                },
-                {
-                    "name": "Steve Müller",
-                    "email": "st.mueller@dzh-online.de"
-                }
-            ],
-            "description": "The Doctrine Coding Standard is a set of PHPCS rules applied to all Doctrine projects.",
-            "homepage": "https://www.doctrine-project.org/projects/coding-standard.html",
-            "keywords": [
-                "checks",
-                "code",
-                "coding",
-                "cs",
-                "doctrine",
-                "rules",
-                "sniffer",
-                "sniffs",
-                "standard",
-                "style"
-            ],
-            "time": "2019-03-15T12:45:47+00:00"
         },
         {
             "name": "doctrine/instantiator",
@@ -1254,53 +1193,6 @@
                 "stub"
             ],
             "time": "2019-06-13T12:50:23+00:00"
-        },
-        {
-            "name": "phpstan/phpdoc-parser",
-            "version": "0.3.5",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/phpstan/phpdoc-parser.git",
-                "reference": "8c4ef2aefd9788238897b678a985e1d5c8df6db4"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpdoc-parser/zipball/8c4ef2aefd9788238897b678a985e1d5c8df6db4",
-                "reference": "8c4ef2aefd9788238897b678a985e1d5c8df6db4",
-                "shasum": ""
-            },
-            "require": {
-                "php": "~7.1"
-            },
-            "require-dev": {
-                "consistence/coding-standard": "^3.5",
-                "jakub-onderka/php-parallel-lint": "^0.9.2",
-                "phing/phing": "^2.16.0",
-                "phpstan/phpstan": "^0.10",
-                "phpunit/phpunit": "^6.3",
-                "slevomat/coding-standard": "^4.7.2",
-                "squizlabs/php_codesniffer": "^3.3.2",
-                "symfony/process": "^3.4 || ^4.0"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "0.3-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "PHPStan\\PhpDocParser\\": [
-                        "src/"
-                    ]
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "description": "PHPDoc parser with support for nullable, intersection and generic types",
-            "time": "2019-06-07T19:13:52+00:00"
         },
         {
             "name": "phpunit/php-code-coverage",
@@ -2206,30 +2098,29 @@
         },
         {
             "name": "slevomat/coding-standard",
-            "version": "5.0.4",
+            "version": "4.8.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/slevomat/coding-standard.git",
-                "reference": "287ac3347c47918c0bf5e10335e36197ea10894c"
+                "reference": "bff96313d8c7c2ba57a4edb13c1c141df8988c58"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/slevomat/coding-standard/zipball/287ac3347c47918c0bf5e10335e36197ea10894c",
-                "reference": "287ac3347c47918c0bf5e10335e36197ea10894c",
+                "url": "https://api.github.com/repos/slevomat/coding-standard/zipball/bff96313d8c7c2ba57a4edb13c1c141df8988c58",
+                "reference": "bff96313d8c7c2ba57a4edb13c1c141df8988c58",
                 "shasum": ""
             },
             "require": {
                 "php": "^7.1",
-                "phpstan/phpdoc-parser": "^0.3.1",
-                "squizlabs/php_codesniffer": "^3.4.1"
+                "squizlabs/php_codesniffer": "^3.4.0"
             },
             "require-dev": {
                 "jakub-onderka/php-parallel-lint": "1.0.0",
                 "phing/phing": "2.16.1",
-                "phpstan/phpstan": "0.11.4",
-                "phpstan/phpstan-phpunit": "0.11",
-                "phpstan/phpstan-strict-rules": "0.11",
-                "phpunit/phpunit": "8.0.5"
+                "phpstan/phpstan": "0.9.2",
+                "phpstan/phpstan-phpunit": "0.9.4",
+                "phpstan/phpstan-strict-rules": "0.9",
+                "phpunit/phpunit": "7.5.1"
             },
             "type": "phpcodesniffer-standard",
             "autoload": {
@@ -2242,7 +2133,7 @@
                 "MIT"
             ],
             "description": "Slevomat Coding Standard for PHP_CodeSniffer complements Consistence Coding Standard by providing sniffs with additional checks.",
-            "time": "2019-03-22T19:10:53+00:00"
+            "time": "2019-01-03T13:15:50+00:00"
         },
         {
             "name": "theseer/tokenizer",
@@ -2283,6 +2174,96 @@
             ],
             "description": "A small library for converting tokenized PHP source code into XML and potentially other formats",
             "time": "2019-06-13T22:48:21+00:00"
+        },
+        {
+            "name": "webimpress/coding-standard",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/webimpress/coding-standard.git",
+                "reference": "5a9336f26d242dbf52fa6b47c811c23e57e65c5d"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/webimpress/coding-standard/zipball/5a9336f26d242dbf52fa6b47c811c23e57e65c5d",
+                "reference": "5a9336f26d242dbf52fa6b47c811c23e57e65c5d",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.1",
+                "squizlabs/php_codesniffer": "^3.4"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^7.5.6"
+            },
+            "type": "phpcodesniffer-standard",
+            "extra": {
+                "dev-master": "1.0.x-dev",
+                "dev-develop": "1.1.x-dev"
+            },
+            "autoload": {
+                "psr-4": {
+                    "WebimpressCodingStandard\\": "src/WebimpressCodingStandard/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-2-Clause"
+            ],
+            "description": "Webimpress Coding Standard",
+            "keywords": [
+                "Coding Standard",
+                "PSR-2",
+                "phpcs",
+                "psr-12",
+                "webimpress"
+            ],
+            "time": "2019-07-11T07:18:42+00:00"
+        },
+        {
+            "name": "zendframework/zend-coding-standard",
+            "version": "2.0.0-alpha.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/zendframework/zend-coding-standard.git",
+                "reference": "d7d46e080684a9da51940393c8f0c6ed67735ff5"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/zendframework/zend-coding-standard/zipball/d7d46e080684a9da51940393c8f0c6ed67735ff5",
+                "reference": "d7d46e080684a9da51940393c8f0c6ed67735ff5",
+                "shasum": ""
+            },
+            "require": {
+                "dealerdirect/phpcodesniffer-composer-installer": "^0.5.0",
+                "php": "^7.1",
+                "slevomat/coding-standard": "^4.8.0",
+                "squizlabs/php_codesniffer": "^3.4.0",
+                "webimpress/coding-standard": "dev-master"
+            },
+            "type": "phpcodesniffer-standard",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.0.x-dev",
+                    "dev-develop": "2.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "ZendCodingStandard\\": "src/ZendCodingStandard"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "description": "Zend Framework Coding Standard",
+            "keywords": [
+                "Coding Standard",
+                "ZendFramework",
+                "zf"
+            ],
+            "time": "2019-01-01T19:08:39+00:00"
         },
         {
             "name": "zendframework/zend-json",
@@ -2393,9 +2374,9 @@
         }
     ],
     "aliases": [],
-    "minimum-stability": "stable",
+    "minimum-stability": "dev",
     "stability-flags": [],
-    "prefer-stable": false,
+    "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
         "php": "^7.3",

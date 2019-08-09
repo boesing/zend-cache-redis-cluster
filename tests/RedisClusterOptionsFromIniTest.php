@@ -1,24 +1,19 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Boesing\ZendCacheRedisClusterTest;
 
-use Boesing\ZendCacheRedisCluster\Exception\InvalidConfiguration;
-use Boesing\ZendCacheRedisCluster\InvalidConfigurationException;
+use Boesing\ZendCacheRedisCluster\Exception\InvalidConfigurationException;
 use Boesing\ZendCacheRedisCluster\RedisClusterOptionsFromIni;
 use PHPUnit\Framework\TestCase;
+
 use function ini_get;
 use function ini_set;
 
-/**
- * @author Maximilian Bösing <max.boesing@check24.de>
- */
 final class RedisClusterOptionsFromIniTest extends TestCase
 {
-
-    /**
-     * @var string
-     */
+    /** @var string */
     private $seedsConfigurationFromIni;
 
     /**
@@ -26,7 +21,7 @@ final class RedisClusterOptionsFromIniTest extends TestCase
      */
     public function willThrowExceptionOnMissingSeedsConfiguration()
     {
-        $this->expectException(InvalidConfiguration::class);
+        $this->expectException(InvalidConfigurationException::class);
         new RedisClusterOptionsFromIni();
     }
 
@@ -38,7 +33,7 @@ final class RedisClusterOptionsFromIniTest extends TestCase
     {
         ini_set('redis.clusters.seeds', $config);
         $options = new RedisClusterOptionsFromIni();
-        $seeds = $options->seeds($nodename);
+        $seeds   = $options->seeds($nodename);
         $this->assertEquals($expected, $seeds);
     }
 
@@ -49,14 +44,14 @@ final class RedisClusterOptionsFromIniTest extends TestCase
     {
         ini_set('redis.clusters.seeds', 'foo[]=bar:123');
         $options = new RedisClusterOptionsFromIni();
-        $this->expectException(InvalidConfiguration::class);
+        $this->expectException(InvalidConfigurationException::class);
         $options->seeds('bar');
     }
 
     public function seedsByNodenameProvider()
     {
         return [
-            'simple' => [
+            'simple'         => [
                 'foo',
                 'foo[]=localhost:1234',
                 ['localhost:1234'],

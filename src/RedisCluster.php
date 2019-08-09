@@ -12,23 +12,24 @@ use stdClass;
 use Zend\Cache\Exception;
 use Zend\Cache\Storage\Adapter\AbstractAdapter;
 use Zend\Cache\Storage\Capabilities;
+use Zend\Cache\Storage\ClearByNamespaceInterface;
+use Zend\Cache\Storage\ClearByPrefixInterface;
 use Zend\Cache\Storage\FlushableInterface;
 use Zend\Cache\Storage\Plugin\Serializer;
-use Zend\Cache\Storage\TotalSpaceCapableInterface;
-use function array_key_exists;
-use function is_array;
+
+use function count;
 use function version_compare;
 
-final class RedisCluster extends AbstractAdapter implements FlushableInterface, TotalSpaceCapableInterface
+final class RedisCluster extends AbstractAdapter implements
+    ClearByNamespaceInterface,
+    ClearByPrefixInterface,
+    FlushableInterface
 {
     /** @var RedisClusterFromExtension|null */
     private $resource;
 
     /** @var string */
     private $namespacePrefix = '';
-
-    /** @var array<int,mixed> */
-    private $libOptions = [];
 
     /**
      * @inheritDoc
@@ -40,7 +41,6 @@ final class RedisCluster extends AbstractAdapter implements FlushableInterface, 
             $this->resource         = null;
             $this->capabilities     = null;
             $this->capabilityMarker = null;
-            $this->libOptions       = [];
         });
     }
 
@@ -64,23 +64,33 @@ final class RedisCluster extends AbstractAdapter implements FlushableInterface, 
     }
 
     /**
+     * In RedisCluster, it is totally okay if just one master is being flushed. If one master is not reachable, it will
+     * re-sync if that master is coming back online.
+     *
      * @inheritDoc
      */
     public function flush() : bool
     {
-        $resource = $this->getRedisResource();
-        $success  = true;
-        foreach ($resource->_masters() as [$host, $port]) {
+        $resource                     = $this->getRedisResource();
+        $anyMasterSuccessfullyFlushed = false;
+        $masters                      = $resource->_masters();
+
+        foreach ($masters as [$host, $port]) {
             $redis = new Redis();
             try {
                 $redis->connect($host, $port);
-                $success &= $redis->flushDB();
             } catch (RedisException $exception) {
-                throw new Exception\RuntimeException($redis->getLastError(), $exception->getCode(), $exception);
+                continue;
             }
+
+            if (! $redis->flushDB()) {
+                return false;
+            }
+
+            $anyMasterSuccessfullyFlushed = true;
         }
 
-        return (bool) $success;
+        return $anyMasterSuccessfullyFlushed;
     }
 
     private function getRedisResource() : RedisClusterFromExtension
@@ -88,16 +98,12 @@ final class RedisCluster extends AbstractAdapter implements FlushableInterface, 
         if ($this->resource instanceof RedisClusterFromExtension) {
             return $this->resource;
         }
-        $options = $this->getOptions();
+
+        $options         = $this->getOptions();
+        $resourceManager = $options->getResourceManager();
 
         try {
-            $resource         = $this->createRedisResource($options);
-            $this->libOptions = $options->libOptions();
-            foreach ($this->libOptions as $option => $value) {
-                $resource->setOption($option, $value);
-            }
-
-            return $this->resource = $resource;
+            return $this->resource = $resourceManager->getResource();
         } catch (RedisClusterException $exception) {
             throw new Exception\RuntimeException('Could not establish connection to redis cluster', 0, $exception);
         }
@@ -111,68 +117,52 @@ final class RedisCluster extends AbstractAdapter implements FlushableInterface, 
         return $options;
     }
 
-    private function createRedisResource(RedisClusterOptions $options) : RedisClusterFromExtension
+    /**
+     * @inheritDoc
+     */
+    public function clearByNamespace($namespace)
     {
-        if ($options->hasNodename()) {
-            return $this->createRedisResourceFromNodename(
-                $options->nodename(),
-                $options->timeout(),
-                $options->readTimeout(),
-                $options->persistent()
-            );
+        $namespace = (string) $namespace;
+        if ($namespace === '') {
+            throw new Exception\InvalidArgumentException('Invalid namespace provided');
         }
 
-        return new RedisClusterFromExtension(
-            null,
-            $options->seeds(),
-            $options->timeout(),
-            $options->readTimeout(),
-            $options->persistent()
-        );
-    }
-
-    private function createRedisResourceFromNodename(
-        string $nodename,
-        float $fallbackTimeout,
-        float $fallbackReadTimeout,
-        bool $persistent
-    ) : RedisClusterFromExtension {
-        $options     = new RedisClusterOptionsFromIni();
-        $seeds       = $options->seeds($nodename);
-        $timeout     = $options->timeout($nodename, $fallbackTimeout);
-        $readTimeout = $options->readTimeout($nodename, $fallbackReadTimeout);
-
-        return new RedisClusterFromExtension(null, $seeds, $timeout, $readTimeout, $persistent);
+        return $this->searchAndDelete('', $namespace);
     }
 
     /**
      * @inheritDoc
      */
-    public function getTotalSpace() : int
+    public function clearByPrefix($prefix)
     {
-        $redis = $this->getRedisResource();
-        try {
-            $info = $redis->info();
-        } catch (RedisClusterException $exception) {
-            throw new Exception\RuntimeException($redis->getLastError(), $exception->getCode(), $exception);
+        $prefix = (string) $prefix;
+        if ($prefix === '') {
+            throw new Exception\InvalidArgumentException('No prefix given');
         }
 
-        return (int) ($info['used_memory'] ?? 0);
+        $options = $this->getOptions();
+
+        return $this->searchAndDelete($prefix, $options->getNamespace());
     }
 
     /**
      * @inheritDoc
      */
-    protected function internalGetItem(& $normalizedKey, & $success = null, & $casToken = null)
+    protected function internalGetItem(&$normalizedKey, &$success = null, &$casToken = null)
     {
-        $redis = $this->getRedisResource();
+        $redis         = $this->getRedisResource();
+        $namespacedKey = $this->key($normalizedKey);
         try {
-            $value = $redis->get($this->key($normalizedKey));
+            $value = $redis->get($namespacedKey);
         } catch (RedisClusterException $exception) {
             throw new Exception\RuntimeException($redis->getLastError(), $exception->getCode(), $exception);
         }
 
-        if ($value === false) {
+        if ($value === false
+            && ($this->getLibOption(RedisClusterFromExtension::OPT_SERIALIZER) ===
+                RedisClusterFromExtension::SERIALIZER_NONE
+                || ! $redis->exists($namespacedKey))
+        ) {
             $success = false;
 
             return null;
@@ -192,10 +182,11 @@ final class RedisCluster extends AbstractAdapter implements FlushableInterface, 
     /**
      * @inheritDoc
      */
-    protected function internalSetItem(& $normalizedKey, & $value)
+    protected function internalSetItem(&$normalizedKey, &$value)
     {
-        $redis = $this->getRedisResource();
-        $ttl   = $this->getOptions()->getTtl();
+        $redis   = $this->getRedisResource();
+        $options = $this->getOptions();
+        $ttl     = $options->getTtl();
 
         try {
             if ($ttl) {
@@ -211,7 +202,7 @@ final class RedisCluster extends AbstractAdapter implements FlushableInterface, 
     /**
      * @inheritDoc
      */
-    protected function internalRemoveItem(& $normalizedKey)
+    protected function internalRemoveItem(&$normalizedKey)
     {
         $redis = $this->getRedisResource();
 
@@ -222,10 +213,37 @@ final class RedisCluster extends AbstractAdapter implements FlushableInterface, 
         }
     }
 
+    protected function internalRemoveItems(array &$normalizedKeys)
+    {
+        $namespacedKeys = [];
+        foreach ($normalizedKeys as $normalizedKey) {
+            $namespacedKeys[] = $this->key((string) $normalizedKey);
+        }
+
+        $redis = $this->getRedisResource();
+
+        try {
+            $deletionSuccessful = $redis->del($namespacedKeys) === count($namespacedKeys);
+            if ($deletionSuccessful) {
+                return [];
+            }
+
+            foreach ($namespacedKeys as $index => $namespacedKey) {
+                if (! $redis->exists($namespacedKey)) {
+                    unset($namespacedKeys[$index]);
+                }
+            }
+        } catch (RedisClusterException $exception) {
+            throw new Exception\RuntimeException($redis->getLastError(), $exception->getCode(), $exception);
+        }
+
+        return $namespacedKeys;
+    }
+
     /**
      * @inheritDoc
      */
-    protected function internalHasItem(& $normalizedKey)
+    protected function internalHasItem(&$normalizedKey)
     {
         $redis = $this->getRedisResource();
 
@@ -279,66 +297,39 @@ final class RedisCluster extends AbstractAdapter implements FlushableInterface, 
             return $this->capabilities;
         }
 
-        $redis                  = $this->getRedisResource();
         $this->capabilityMarker = new stdClass();
+        $options                = $this->getOptions();
+        $resourceManager        = $options->getResourceManager();
+        $serializer             = $resourceManager->getLibOption(RedisClusterFromExtension::OPT_SERIALIZER)
+            !== RedisClusterFromExtension::SERIALIZER_NONE;
 
-        $serializer = (bool) $this->getLibOption($redis, RedisClusterFromExtension::OPT_SERIALIZER);
         if (! $serializer) {
             $serializer = $this->hasPlugin(new Serializer());
         }
 
-        $redisVersion = $this->detectRedisVersion($redis, $this->getOptions());
+        $redisVersion = $resourceManager->getVersion();
 
         $redisVersionLessThanV2 = version_compare($redisVersion, '2.0', '<');
         $minTtl                 = $redisVersionLessThanV2 ? 0 : 1;
-        $supportedMetadata      = $redisVersionLessThanV2 ? ['ttl'] : [];
+        $supportedMetadata      = ! $redisVersionLessThanV2 ? ['ttl'] : [];
 
         $this->capabilities = new Capabilities(
             $this,
             $this->capabilityMarker,
             [
                 'supportedDatatypes' => $this->supportedDatatypes($serializer),
-                'supportedMetadata' => $supportedMetadata,
-                'minTtl' => $minTtl,
-                'maxTtl' => 0,
-                'staticTtl' => true,
-                'ttlPrecision' => 1,
-                'useRequestTime' => false,
-                'maxKeyLength' => 255,
-                'namespaceIsPrefix' => true,
+                'supportedMetadata'  => $supportedMetadata,
+                'minTtl'             => $minTtl,
+                'maxTtl'             => 0,
+                'staticTtl'          => true,
+                'ttlPrecision'       => 1,
+                'useRequestTime'     => false,
+                'maxKeyLength'       => 255,
+                'namespaceIsPrefix'  => true,
             ]
         );
 
         return $this->capabilities;
-    }
-
-    /**
-     * @return mixed
-     */
-    private function getLibOption(RedisClusterFromExtension $redis, int $option)
-    {
-        if (array_key_exists($option, $this->libOptions)) {
-            return $this->libOptions[$option];
-        }
-
-        return $this->libOptions[$option] = $redis->getOption($option);
-    }
-
-    private function detectRedisVersion(RedisClusterFromExtension $redis, RedisClusterOptions $options) : string
-    {
-        $version = $options->redisVersion();
-        if ($version) {
-            return $version;
-        }
-
-        $version = $redis->info('redis_version');
-
-        /** @see https://github.com/phpredis/phpredis/issues/1616 */
-        if (is_array($version)) {
-            return $version['redis_version'];
-        }
-
-        return $version;
     }
 
     /**
@@ -348,26 +339,48 @@ final class RedisCluster extends AbstractAdapter implements FlushableInterface, 
     {
         if ($serializer) {
             return [
-                'NULL' => true,
-                'boolean' => true,
-                'integer' => true,
-                'double' => true,
-                'string' => true,
-                'array' => 'array',
-                'object' => 'object',
+                'NULL'     => true,
+                'boolean'  => true,
+                'integer'  => true,
+                'double'   => true,
+                'string'   => true,
+                'array'    => 'array',
+                'object'   => 'object',
                 'resource' => false,
             ];
         }
 
         return [
-            'NULL' => 'string',
-            'boolean' => 'string',
-            'integer' => 'string',
-            'double' => 'string',
-            'string' => true,
-            'array' => false,
-            'object' => false,
+            'NULL'     => 'string',
+            'boolean'  => 'string',
+            'integer'  => 'string',
+            'double'   => 'string',
+            'string'   => true,
+            'array'    => false,
+            'object'   => false,
             'resource' => false,
         ];
+    }
+
+    private function getLibOption(int $option) : int
+    {
+        $options         = $this->getOptions();
+        $resourceManager = $options->getResourceManager();
+        return $resourceManager->getLibOption($option);
+    }
+
+    private function searchAndDelete(string $prefix, string $namespace)
+    {
+        $redis   = $this->getRedisResource();
+        $options = $this->getOptions();
+
+        $prefix = $namespace === '' ? '' : $namespace . $options->getNamespaceSeparator() . $prefix;
+
+        $keys = $redis->keys($prefix . '*');
+        if (! $keys) {
+            return true;
+        }
+
+        return $redis->del($keys) === count($keys);
     }
 }

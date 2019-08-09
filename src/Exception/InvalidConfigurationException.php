@@ -5,9 +5,10 @@ declare(strict_types=1);
 namespace Boesing\ZendCacheRedisCluster\Exception;
 
 use Zend\Cache\Exception\InvalidArgumentException;
+
 use function sprintf;
 
-final class InvalidConfiguration extends InvalidArgumentException
+final class InvalidConfigurationException extends InvalidArgumentException
 {
     public static function fromMissingSeedsConfiguration() : self
     {
