@@ -19,10 +19,10 @@ final class RedisClusterOptions extends AdapterOptions
     protected $nodename = '';
 
     /** @var float */
-    protected $timeout = 0.0;
+    protected $timeout = 1.0;
 
     /** @var float */
-    protected $readTimeout = 0.0;
+    protected $readTimeout = 2.0;
 
     /** @var bool */
     protected $persistent = false;
