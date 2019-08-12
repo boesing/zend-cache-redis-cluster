@@ -112,7 +112,7 @@ final class RedisClusterResourceManager implements RedisClusterResourceManagerIn
         array $options
     ) : RedisClusterFromExtension {
         foreach ($options as $option => $value) {
-            $resource->setOption($option, $value);
+            $resource->setOption($option, (string) $value);
         }
 
         return $resource;
