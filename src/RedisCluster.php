@@ -15,7 +15,6 @@ use Zend\Cache\Storage\Capabilities;
 use Zend\Cache\Storage\ClearByNamespaceInterface;
 use Zend\Cache\Storage\ClearByPrefixInterface;
 use Zend\Cache\Storage\FlushableInterface;
-use Zend\Cache\Storage\Plugin\Serializer;
 
 use function count;
 use function version_compare;
@@ -300,12 +299,7 @@ final class RedisCluster extends AbstractAdapter implements
         $this->capabilityMarker = new stdClass();
         $options                = $this->getOptions();
         $resourceManager        = $options->getResourceManager();
-        $serializer             = $resourceManager->getLibOption(RedisClusterFromExtension::OPT_SERIALIZER)
-            !== RedisClusterFromExtension::SERIALIZER_NONE;
-
-        if (! $serializer) {
-            $serializer = $this->hasPlugin(new Serializer());
-        }
+        $serializer             = $resourceManager->hasSerializationSupport($this);
 
         $redisVersion = $resourceManager->getVersion();
 

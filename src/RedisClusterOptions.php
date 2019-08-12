@@ -36,7 +36,7 @@ final class RedisClusterOptions extends AdapterOptions
     /** @var array<int,mixed> */
     protected $libOptions = [];
 
-    /** @var RedisClusterClusterResourceManager|null */
+    /** @var RedisClusterResourceManager|null */
     private $resourceManager;
 
     /**
@@ -177,6 +177,6 @@ final class RedisClusterOptions extends AdapterOptions
             return $this->resourceManager;
         }
 
-        return $this->resourceManager = new RedisClusterClusterResourceManager($this);
+        return $this->resourceManager = new RedisClusterResourceManager($this);
     }
 }

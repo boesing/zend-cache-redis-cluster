@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Boesing\ZendCacheRedisCluster;
 
 use RedisCluster as RedisClusterFromExtension;
+use Zend\Cache\Storage\Adapter\AbstractAdapter;
 
 interface RedisClusterResourceManagerInterface
 {
@@ -16,4 +17,6 @@ interface RedisClusterResourceManagerInterface
     public function getResource() : RedisClusterFromExtension;
 
     public function getLibOption(int $option) : int;
+
+    public function hasSerializationSupport(AbstractAdapter $adapter) : bool;
 }

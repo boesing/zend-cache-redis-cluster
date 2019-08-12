@@ -15,9 +15,6 @@ final class RedisClusterTest extends TestCase
 {
     use RedisClusterStorageCreationTrait;
 
-    /** @var RedisCluster */
-    private $storage;
-
     /**
      * @test
      */
@@ -111,5 +108,14 @@ final class RedisClusterTest extends TestCase
         parent::setUp();
 
         $this->storage = $this->createRedisClusterStorage(RedisClusterFromExtension::SERIALIZER_NONE, true);
+    }
+
+    /**
+     * Remove the property cache as we do want to create a new instance for the next test.
+     */
+    protected function tearDown()
+    {
+        $this->storage = null;
+        parent::tearDown();
     }
 }

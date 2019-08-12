@@ -5,24 +5,38 @@ declare(strict_types=1);
 namespace Boesing\ZendCacheRedisClusterIntegration;
 
 use Boesing\ZendCacheRedisCluster\RedisCluster;
+use function posix_getpid;
 use RedisCluster as RedisClusterFromExtension;
 use RuntimeException;
+use function uniqid;
 use Zend\Cache\Storage\Plugin\Serializer;
-
 use function getenv;
 
 trait RedisClusterStorageCreationTrait
 {
-    private function createRedisClusterStorage(int $serializerOption, bool $serializerPlugin) : RedisCluster
+
+    /**
+     * @var RedisCluster
+     */
+    private $storage;
+
+    private function createRedisClusterStorage(int $serializerOption, bool $serializerPlugin): RedisCluster
     {
+        if ($this->storage) {
+            return $this->storage;
+        }
+
         $node = getenv('TESTS_ZEND_CACHE_REDIS_CLUSTER_NODENAME') ?? '';
-        if (! $node) {
+        if (!$node) {
             throw new RuntimeException('Could not find nodename environment configuration.');
         }
 
-        $options['nodename']    = $node;
-        $options['lib_options'] = [
-            RedisClusterFromExtension::OPT_SERIALIZER => $serializerOption,
+        $options = [
+            'nodename' => $node,
+            'lib_options' => [
+                RedisClusterFromExtension::OPT_SERIALIZER => $serializerOption,
+            ],
+            'namespace' => uniqid((string) posix_getpid(), true),
         ];
 
         $storage = new RedisCluster($options);
@@ -30,6 +44,6 @@ trait RedisClusterStorageCreationTrait
             $storage->addPlugin(new Serializer());
         }
 
-        return $storage;
+        return $this->storage = $storage;
     }
 }

@@ -6,10 +6,13 @@ namespace Boesing\ZendCacheRedisCluster;
 
 use RedisCluster as RedisClusterFromExtension;
 use ReflectionClass;
+use Zend\Cache\Storage\Adapter\AbstractAdapter;
+use Zend\Cache\Storage\Plugin\PluginInterface;
+use Zend\Cache\Storage\Plugin\Serializer;
 
 use function strpos;
 
-final class RedisClusterClusterResourceManager implements RedisClusterResourceManagerInterface
+final class RedisClusterResourceManager implements RedisClusterResourceManagerInterface
 {
     /** @var RedisClusterOptions */
     private $options;
@@ -116,5 +119,29 @@ final class RedisClusterClusterResourceManager implements RedisClusterResourceMa
     public function getLibOption(int $option) : int
     {
         return $this->libraryOptions[$option] ?? $this->getResource()->getOption($option);
+    }
+
+    public function hasSerializationSupport(AbstractAdapter $adapter) : bool
+    {
+        $options        = $this->options;
+        $libraryOptions = $options->libOptions();
+        $serializer     = $libraryOptions[RedisClusterFromExtension::OPT_SERIALIZER] ??
+            RedisClusterFromExtension::SERIALIZER_NONE;
+
+        if ($serializer !== RedisClusterFromExtension::SERIALIZER_NONE) {
+            return true;
+        }
+
+        /** @var PluginInterface[] $plugins */
+        $plugins = $adapter->getPluginRegistry();
+        foreach ($plugins as $plugin) {
+            if (! $plugin instanceof Serializer) {
+                continue;
+            }
+
+            return true;
+        }
+
+        return false;
     }
 }

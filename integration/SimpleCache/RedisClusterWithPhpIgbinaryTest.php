@@ -23,4 +23,13 @@ final class RedisClusterWithPhpIgbinaryTest extends SimpleCacheTest
 
         return new SimpleCacheDecorator($storage);
     }
+
+    /**
+     * Remove the property cache as we do want to create a new instance for the next test.
+     */
+    protected function tearDown()
+    {
+        $this->storage = null;
+        parent::tearDown();
+    }
 }
