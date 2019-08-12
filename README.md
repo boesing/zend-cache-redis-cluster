@@ -38,7 +38,7 @@ return [
                 ],
             ],
         ],
-        'redis-cluster-cache-with-nodename' => [
+        'redis-cluster-cache-with-seeds' => [
             'adapter' => [
                 'name' => RedisCluster::class,
                 'options' => [
