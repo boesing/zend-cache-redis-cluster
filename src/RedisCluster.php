@@ -201,8 +201,8 @@ final class RedisCluster extends AbstractAdapter implements
             return $this->namespacePrefix . $key;
         }
 
-        $options   = $this->getOptions();
-        $namespace = $options->getNamespace();
+        $options               = $this->getOptions();
+        $namespace             = $options->getNamespace();
         $this->namespacePrefix = $namespace;
         if ($namespace !== '') {
             $this->namespacePrefix = $namespace . $options->getNamespaceSeparator();
@@ -416,14 +416,18 @@ final class RedisCluster extends AbstractAdapter implements
         return $redis->del($keys) === count($keys);
     }
 
-    private function clusterException(RedisClusterException $exception, RedisClusterFromExtension $redis) : Exception\RuntimeException
-    {
+    private function clusterException(
+        RedisClusterException $exception,
+        RedisClusterFromExtension $redis
+    ) : Exception\RuntimeException {
         return Exception\RuntimeException::fromClusterException($exception, $redis);
     }
 
     private function internalSerializerUsed(RedisClusterFromExtension $redis, string $key) : bool
     {
-        if ($this->getLibOption(RedisClusterFromExtension::OPT_SERIALIZER) === RedisClusterFromExtension::SERIALIZER_NONE) {
+        if ($this->getLibOption(RedisClusterFromExtension::OPT_SERIALIZER) ===
+            RedisClusterFromExtension::SERIALIZER_NONE
+        ) {
             return false;
         }
 

@@ -7,14 +7,10 @@ namespace Boesing\ZendCacheRedisCluster\Exception;
 use RedisCluster;
 use RedisClusterException;
 use Throwable;
+use Zend\Cache\Exception\RuntimeException as ZendCacheRuntimeException;
 
-final class RuntimeException extends \Zend\Cache\Exception\RuntimeException
+final class RuntimeException extends ZendCacheRuntimeException
 {
-    private function __construct($message = '', $code = 0, ?Throwable $previous = null)
-    {
-        parent::__construct($message, $code, $previous);
-    }
-
     public static function fromClusterException(RedisClusterException $exception, RedisCluster $redis) : self
     {
         $message = $redis->getLastError() ?? $exception->getMessage();
