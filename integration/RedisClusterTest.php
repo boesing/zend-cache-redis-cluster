@@ -103,11 +103,45 @@ final class RedisClusterTest extends TestCase
         ], $dataTypes);
     }
 
+    /**
+     * @test
+     */
+    public function clearsByNamespace()
+    {
+        $namespace        = 'foo';
+        $anotherNamespace = 'bar';
+        $storage          = $this->storage;
+        $options          = $storage->getOptions();
+        $options->setNamespace($namespace);
+
+        $storage->setItem('bar', 'baz');
+        $storage->setItem('qoo', 'ooq');
+
+        $options->setNamespace($anotherNamespace);
+
+        $storage->setItem('bar', 'baz');
+        $storage->setItem('qoo', 'ooq');
+
+        $storage->clearByNamespace($namespace);
+
+        $options->setNamespace($namespace);
+
+        $result = $storage->getItems(['bar', 'qoo']);
+        $this->assertEmpty($result);
+
+        $options->setNamespace($anotherNamespace);
+        $result = $storage->getItems(['bar', 'qoo']);
+        $this->assertEquals($result['bar'], 'baz');
+        $this->assertEquals($result['qoo'], 'ooq');
+    }
+
     protected function setUp()
     {
         parent::setUp();
 
         $this->storage = $this->createRedisClusterStorage(RedisClusterFromExtension::SERIALIZER_NONE, true);
+        // Clear storage before executing tests.
+        $this->storage->flush();
     }
 
     /**

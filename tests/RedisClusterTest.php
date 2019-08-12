@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Boesing\ZendCacheRedisClusterTest;
@@ -9,7 +10,6 @@ use PHPUnit\Framework\TestCase;
 
 final class RedisClusterTest extends TestCase
 {
-
     /**
      * @test
      */
@@ -34,7 +34,7 @@ final class RedisClusterTest extends TestCase
             ->willReturn('5.0.0');
 
         $capabilities = $adapter->getCapabilities();
-        $datatypes = $capabilities->getSupportedDatatypes();
+        $datatypes    = $capabilities->getSupportedDatatypes();
         $this->assertEquals([
             'NULL'     => true,
             'boolean'  => true,
@@ -71,7 +71,7 @@ final class RedisClusterTest extends TestCase
             ->willReturn('5.0.0');
 
         $capabilities = $adapter->getCapabilities();
-        $datatypes = $capabilities->getSupportedDatatypes();
+        $datatypes    = $capabilities->getSupportedDatatypes();
         $this->assertEquals([
             'NULL'     => 'string',
             'boolean'  => 'string',

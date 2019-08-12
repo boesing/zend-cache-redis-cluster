@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Boesing\ZendCacheRedisClusterTest;
@@ -9,15 +10,12 @@ use PHPUnit\Framework\TestCase;
 use RedisCluster;
 use SplObjectStorage;
 use Zend\Cache\Storage\Adapter\AbstractAdapter;
-use function uniqid;
 use Zend\Cache\Storage\Plugin\Serializer;
 
-/**
- * @author Maximilian Bösing <max.boesing@check24.de>
- */
+use function uniqid;
+
 final class RedisClusterResourceManagerTest extends TestCase
 {
-
     /**
      * @test
      * @dataProvider serializationSupportOptionsProvider
@@ -67,7 +65,7 @@ final class RedisClusterResourceManagerTest extends TestCase
     public function willReturnVersionFromOptions()
     {
         $manager = new RedisClusterResourceManager(new RedisClusterOptions([
-            'nodename' => uniqid(),
+            'nodename'      => uniqid(),
             'redis_version' => '1.0.0',
         ]));
 
@@ -78,9 +76,9 @@ final class RedisClusterResourceManagerTest extends TestCase
     public function serializationSupportOptionsProvider()
     {
         return [
-            'php-serialize' => [
+            'php-serialize'      => [
                 new RedisClusterOptions([
-                    'nodename' => uniqid(),
+                    'nodename'    => uniqid(),
                     'lib_options' => [
                         RedisCluster::OPT_SERIALIZER => RedisCluster::SERIALIZER_PHP,
                     ],
@@ -88,7 +86,7 @@ final class RedisClusterResourceManagerTest extends TestCase
             ],
             'igbinary-serialize' => [
                 new RedisClusterOptions([
-                    'nodename' => uniqid(),
+                    'nodename'    => uniqid(),
                     'lib_options' => [
                         RedisCluster::OPT_SERIALIZER => RedisCluster::SERIALIZER_IGBINARY,
                     ],

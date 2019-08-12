@@ -9,7 +9,6 @@ use RedisCluster as RedisClusterFromExtension;
 use RedisClusterException;
 use RedisException;
 use stdClass;
-use Zend\Cache\Exception;
 use Zend\Cache\Storage\Adapter\AbstractAdapter;
 use Zend\Cache\Storage\Capabilities;
 use Zend\Cache\Storage\ClearByNamespaceInterface;
@@ -27,8 +26,8 @@ final class RedisCluster extends AbstractAdapter implements
     /** @var RedisClusterFromExtension|null */
     private $resource;
 
-    /** @var string */
-    private $namespacePrefix = '';
+    /** @var string|null */
+    private $namespacePrefix;
 
     /**
      * @inheritDoc
@@ -40,6 +39,7 @@ final class RedisCluster extends AbstractAdapter implements
             $this->resource         = null;
             $this->capabilities     = null;
             $this->capabilityMarker = null;
+            $this->namespacePrefix  = null;
         });
     }
 
@@ -50,11 +50,6 @@ final class RedisCluster extends AbstractAdapter implements
     {
         if (! $options instanceof RedisClusterOptions) {
             $options = new RedisClusterOptions($options);
-        }
-
-        $namespace = $options->getNamespace();
-        if ($namespace !== '') {
-            $this->namespacePrefix = $namespace . $options->getNamespaceSeparator();
         }
 
         $options->setAdapter($this);
@@ -104,7 +99,7 @@ final class RedisCluster extends AbstractAdapter implements
         try {
             return $this->resource = $resourceManager->getResource();
         } catch (RedisClusterException $exception) {
-            throw new Exception\RuntimeException('Could not establish connection to redis cluster', 0, $exception);
+            throw Exception\RuntimeException::connectionFailed($exception);
         }
     }
 
@@ -153,18 +148,14 @@ final class RedisCluster extends AbstractAdapter implements
         $namespacedKey = $this->key($normalizedKey);
         try {
             $value = $redis->get($namespacedKey);
+
+            if ($value === false && ! $this->internalSerializerUsed($redis, $namespacedKey)) {
+                $success = false;
+
+                return null;
+            }
         } catch (RedisClusterException $exception) {
-            throw new Exception\RuntimeException($redis->getLastError(), $exception->getCode(), $exception);
-        }
-
-        if ($value === false
-            && ($this->getLibOption(RedisClusterFromExtension::OPT_SERIALIZER) ===
-                RedisClusterFromExtension::SERIALIZER_NONE
-                || ! $redis->exists($namespacedKey))
-        ) {
-            $success = false;
-
-            return null;
+            throw $this->clusterException($exception, $redis);
         }
 
         $success  = true;
@@ -173,8 +164,50 @@ final class RedisCluster extends AbstractAdapter implements
         return $value;
     }
 
+    /**
+     * @inheritDoc
+     */
+    protected function internalGetItems(array &$normalizedKeys)
+    {
+        $namespacedKeys = [];
+        foreach ($normalizedKeys as $normalizedKey) {
+            $namespacedKeys[] = $this->key((string) $normalizedKey);
+        }
+
+        $redis = $this->getRedisResource();
+
+        try {
+            $resultsByIndex = $redis->mget($namespacedKeys);
+        } catch (RedisClusterException $exception) {
+            throw $this->clusterException($exception, $redis);
+        }
+
+        $result = [];
+        foreach ($resultsByIndex as $normalizedKeyIndex => $value) {
+            $normalizedKey = $normalizedKeys[$normalizedKeyIndex];
+            if ($value === false && ! $this->internalSerializerUsed($redis, $normalizedKey)) {
+                continue;
+            }
+
+            $result[$normalizedKey] = $value;
+        }
+
+        return $result;
+    }
+
     private function key(string $key) : string
     {
+        if ($this->namespacePrefix !== null) {
+            return $this->namespacePrefix . $key;
+        }
+
+        $options   = $this->getOptions();
+        $namespace = $options->getNamespace();
+        $this->namespacePrefix = $namespace;
+        if ($namespace !== '') {
+            $this->namespacePrefix = $namespace . $options->getNamespaceSeparator();
+        }
+
         return $this->namespacePrefix . $key;
     }
 
@@ -187,14 +220,15 @@ final class RedisCluster extends AbstractAdapter implements
         $options = $this->getOptions();
         $ttl     = $options->getTtl();
 
+        $namespacedKey = $this->key($normalizedKey);
         try {
             if ($ttl) {
-                return $redis->setex($this->key($normalizedKey), $ttl, $value);
+                return $redis->setex($namespacedKey, $ttl, $value);
             }
 
-            return $redis->set($this->key($normalizedKey), $value);
+            return $redis->set($namespacedKey, $value);
         } catch (RedisClusterException $exception) {
-            throw new Exception\RuntimeException($redis->getLastError(), $exception->getCode(), $exception);
+            throw $this->clusterException($exception, $redis);
         }
     }
 
@@ -206,9 +240,9 @@ final class RedisCluster extends AbstractAdapter implements
         $redis = $this->getRedisResource();
 
         try {
-            return (bool) $redis->del($this->key($normalizedKey));
+            return $redis->del($this->key($normalizedKey)) === 1;
         } catch (RedisClusterException $exception) {
-            throw new Exception\RuntimeException($redis->getLastError(), $exception->getCode(), $exception);
+            throw $this->clusterException($exception, $redis);
         }
     }
 
@@ -228,12 +262,12 @@ final class RedisCluster extends AbstractAdapter implements
             }
 
             foreach ($namespacedKeys as $index => $namespacedKey) {
-                if (! $redis->exists($namespacedKey)) {
+                if ($redis->exists($namespacedKey) === 0) {
                     unset($namespacedKeys[$index]);
                 }
             }
         } catch (RedisClusterException $exception) {
-            throw new Exception\RuntimeException($redis->getLastError(), $exception->getCode(), $exception);
+            throw $this->clusterException($exception, $redis);
         }
 
         return $namespacedKeys;
@@ -249,7 +283,7 @@ final class RedisCluster extends AbstractAdapter implements
         try {
             return (bool) $redis->exists($this->key($normalizedKey));
         } catch (RedisClusterException $exception) {
-            throw new Exception\RuntimeException($redis->getLastError(), $exception->getCode(), $exception);
+            throw $this->clusterException($exception, $redis);
         }
     }
 
@@ -266,13 +300,19 @@ final class RedisCluster extends AbstractAdapter implements
             $namespacedKeyValuePairs[$this->key((string) $normalizedKey)] = $value;
         }
 
+        $successByKey = [];
+
         try {
-            $successByKey = [];
             foreach ($namespacedKeyValuePairs as $key => $value) {
-                $successByKey[$key] = $ttl ? $redis->setex($key, $ttl, $value) : $redis->set($key, $value);
+                if ($ttl) {
+                    $successByKey[$key] = $redis->setex($key, $ttl, $value);
+                    continue;
+                }
+
+                $successByKey[$key] = $redis->set($key, $value);
             }
         } catch (RedisClusterException $exception) {
-            throw new Exception\RuntimeException($redis->getLastError(), $exception->getCode(), $exception);
+            throw $this->clusterException($exception, $redis);
         }
 
         $statuses = [];
@@ -300,9 +340,7 @@ final class RedisCluster extends AbstractAdapter implements
         $options                = $this->getOptions();
         $resourceManager        = $options->getResourceManager();
         $serializer             = $resourceManager->hasSerializationSupport($this);
-
-        $redisVersion = $resourceManager->getVersion();
-
+        $redisVersion           = $resourceManager->getVersion();
         $redisVersionLessThanV2 = version_compare($redisVersion, '2.0', '<');
         $minTtl                 = $redisVersionLessThanV2 ? 0 : 1;
         $supportedMetadata      = ! $redisVersionLessThanV2 ? ['ttl'] : [];
@@ -376,5 +414,23 @@ final class RedisCluster extends AbstractAdapter implements
         }
 
         return $redis->del($keys) === count($keys);
+    }
+
+    private function clusterException(RedisClusterException $exception, RedisClusterFromExtension $redis) : Exception\RuntimeException
+    {
+        return Exception\RuntimeException::fromClusterException($exception, $redis);
+    }
+
+    private function internalSerializerUsed(RedisClusterFromExtension $redis, string $key) : bool
+    {
+        if ($this->getLibOption(RedisClusterFromExtension::OPT_SERIALIZER) === RedisClusterFromExtension::SERIALIZER_NONE) {
+            return false;
+        }
+
+        try {
+            return (bool) $redis->exists($key);
+        } catch (RedisClusterException $exception) {
+            throw $this->clusterException($exception, $redis);
+        }
     }
 }

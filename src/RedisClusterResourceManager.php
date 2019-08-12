@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Boesing\ZendCacheRedisCluster;
 
+use Boesing\ZendCacheRedisCluster\Exception\RuntimeException;
 use RedisCluster as RedisClusterFromExtension;
+use RedisClusterException;
 use ReflectionClass;
 use Zend\Cache\Storage\Adapter\AbstractAdapter;
 use Zend\Cache\Storage\Plugin\PluginInterface;
@@ -36,7 +38,12 @@ final class RedisClusterResourceManager implements RedisClusterResourceManagerIn
         /**
          * @var array<string,mixed> $info
          */
-        $info    = $resource->info($this->options->nodename() ?: $this->options->seeds());
+        try {
+            $info = $resource->info($this->options->nodename() ?: $this->options->seeds());
+        } catch (RedisClusterException $exception) {
+            throw RuntimeException::fromClusterException($exception, $resource);
+        }
+
         $version = $info['redis_version'];
         $this->options->setRedisVersion($version);
 
@@ -48,10 +55,20 @@ final class RedisClusterResourceManager implements RedisClusterResourceManagerIn
      */
     public function getResource() : RedisClusterFromExtension
     {
-        $resource             = $this->createRedisResource($this->options);
-        $libraryOptions       = $this->options->libOptions();
-        $resource             = $this->applyLibraryOptions($resource, $libraryOptions);
-        $this->libraryOptions = $this->mergeLibraryOptionsFromCluster($libraryOptions, $resource);
+        try {
+            $resource = $this->createRedisResource($this->options);
+        } catch (RedisClusterException $exception) {
+            throw RuntimeException::connectionFailed($exception);
+        }
+
+        $libraryOptions = $this->options->libOptions();
+
+        try {
+            $resource             = $this->applyLibraryOptions($resource, $libraryOptions);
+            $this->libraryOptions = $this->mergeLibraryOptionsFromCluster($libraryOptions, $resource);
+        } catch (RedisClusterException $exception) {
+            throw RuntimeException::fromClusterException($exception, $resource);
+        }
 
         return $resource;
     }
