@@ -2,11 +2,11 @@
 
 All notable changes to this project will be documented in this file, in reverse chronological order by release.
 
-## 0.2.0 - TBD
+## 0.2.0 - 2019-08-12
 
 ### Added
 
-- Nothing.
+- Support for ext-redis 4.3.0 and upwards.
 
 ### Changed
 
