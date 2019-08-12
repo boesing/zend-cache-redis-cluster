@@ -1,6 +1,14 @@
 {
     "name": "boesing/zend-cache-redis-cluster",
     "description": "Redis Cluster support for zend-cache",
+    "keywords": [
+        "zendframework",
+        "zf",
+        "zend-cache",
+        "redis",
+        "redis cluster"
+    ],
+    "license": "BSD-3-Clause",
     "authors": [
         {
             "name": "Maximilian Bösing",
