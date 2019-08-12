@@ -9,7 +9,7 @@ use ReflectionClass;
 
 use function strpos;
 
-final class RedisClusterResourceManager implements RedisResourceManagerInterface
+final class RedisClusterClusterResourceManager implements RedisClusterResourceManagerInterface
 {
     /** @var RedisClusterOptions */
     private $options;

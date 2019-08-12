@@ -6,7 +6,7 @@ namespace Boesing\ZendCacheRedisCluster;
 
 use RedisCluster as RedisClusterFromExtension;
 
-interface RedisResourceManagerInterface
+interface RedisClusterResourceManagerInterface
 {
     public function getVersion() : string;
 
