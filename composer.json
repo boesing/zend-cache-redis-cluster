@@ -17,7 +17,7 @@
     ],
     "require": {
         "php": "^7.3",
-        "ext-redis": "^5.0",
+        "ext-redis": "^4.3 || ^5.0.2",
         "webmozart/assert": "^1.4",
         "zendframework/zend-cache": "^2.8"
     },

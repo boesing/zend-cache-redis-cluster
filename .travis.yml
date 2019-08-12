@@ -20,14 +20,17 @@ matrix:
     - php: 7.3
       env:
         - DEPS=lowest
+        - PHPREDIS_PECL_VERSION="redis-4.3.0"
     - php: 7.3
       env:
         - DEPS=locked
         - CS_CHECK=true
         - TEST_COVERAGE=true
+        - PHPREDIS_PECL_VERSION="redis-5.0.2"
     - php: 7.3
       env:
         - DEPS=latest
+        - PHPREDIS_PECL_VERSION="redis-5.0.2"
 
 
 before_install:
@@ -43,7 +46,7 @@ install:
     --name redis-cluster \
     karelcemus/redis-cluster:latest
   - pecl install igbinary
-  - printf "yes\nyes\n" | pecl install --force redis
+  - printf "yes\nyes\n" | pecl install --force $PHPREDIS_PECL_VERSION
   - phpenv config-add .ci/redis-cluster.ini ;
   - travis_retry composer install $COMPOSER_ARGS
   - if [[ $DEPS == 'latest' ]]; then travis_retry composer update $COMPOSER_ARGS ; fi
