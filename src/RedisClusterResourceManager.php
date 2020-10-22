@@ -8,9 +8,9 @@ use Boesing\ZendCacheRedisCluster\Exception\RuntimeException;
 use RedisCluster as RedisClusterFromExtension;
 use RedisClusterException;
 use ReflectionClass;
-use Zend\Cache\Storage\Adapter\AbstractAdapter;
-use Zend\Cache\Storage\Plugin\PluginInterface;
-use Zend\Cache\Storage\Plugin\Serializer;
+use Laminas\Cache\Storage\Adapter\AbstractAdapter;
+use Laminas\Cache\Storage\Plugin\PluginInterface;
+use Laminas\Cache\Storage\Plugin\Serializer;
 
 use function strpos;
 

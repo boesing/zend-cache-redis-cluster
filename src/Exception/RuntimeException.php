@@ -7,9 +7,9 @@ namespace Boesing\ZendCacheRedisCluster\Exception;
 use RedisCluster;
 use RedisClusterException;
 use Throwable;
-use Zend\Cache\Exception\RuntimeException as ZendCacheRuntimeException;
+use Laminas\Cache\Exception\RuntimeException as LaminasCacheRuntimeException;
 
-final class RuntimeException extends ZendCacheRuntimeException
+final class RuntimeException extends LaminasCacheRuntimeException
 {
     public static function fromClusterException(RedisClusterException $exception, RedisCluster $redis) : self
     {

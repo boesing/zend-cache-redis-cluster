@@ -8,8 +8,8 @@ use Boesing\ZendCacheRedisCluster\RedisCluster;
 use Boesing\ZendCacheRedisCluster\RedisClusterOptions;
 use PHPUnit\Framework\TestCase;
 use RedisCluster as RedisClusterFromExtension;
-use Zend\Cache\Storage\Adapter\AbstractAdapter;
-use Zend\Cache\Storage\Plugin\Serializer;
+use Laminas\Cache\Storage\Adapter\AbstractAdapter;
+use Laminas\Cache\Storage\Plugin\Serializer;
 
 final class RedisClusterTest extends TestCase
 {

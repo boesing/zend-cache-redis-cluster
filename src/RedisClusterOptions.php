@@ -6,7 +6,7 @@ namespace Boesing\ZendCacheRedisCluster;
 
 use Boesing\ZendCacheRedisCluster\Exception\InvalidConfigurationException;
 use Webmozart\Assert\Assert;
-use Zend\Cache\Storage\Adapter\AdapterOptions;
+use Laminas\Cache\Storage\Adapter\AdapterOptions;
 
 use function array_keys;
 

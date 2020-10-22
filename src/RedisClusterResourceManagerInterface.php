@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Boesing\ZendCacheRedisCluster;
 
 use RedisCluster as RedisClusterFromExtension;
-use Zend\Cache\Storage\Adapter\AbstractAdapter;
+use Laminas\Cache\Storage\Adapter\AbstractAdapter;
 
 interface RedisClusterResourceManagerInterface
 {

@@ -6,14 +6,14 @@ namespace Boesing\ZendCacheRedisClusterTest;
 
 use Boesing\ZendCacheRedisCluster\Exception\InvalidConfigurationException;
 use PHPUnit\Framework\TestCase;
-use Zend\Cache\Exception\ExceptionInterface;
+use Laminas\Cache\Exception\ExceptionInterface;
 
 final class InvalidConfigurationExceptionTest extends TestCase
 {
     /**
      * @test
      */
-    public function instanceOfZendCacheException()
+    public function instanceOfLaminasCacheException()
     {
         $exception = new InvalidConfigurationException();
         $this->assertInstanceOf(ExceptionInterface::class, $exception);

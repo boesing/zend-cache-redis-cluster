@@ -7,7 +7,7 @@ namespace Boesing\ZendCacheRedisClusterIntegration;
 use Boesing\ZendCacheRedisCluster\RedisCluster;
 use RedisCluster as RedisClusterFromExtension;
 use RuntimeException;
-use Zend\Cache\Storage\Plugin\Serializer;
+use Laminas\Cache\Storage\Plugin\Serializer;
 
 use function getenv;
 use function posix_getpid;

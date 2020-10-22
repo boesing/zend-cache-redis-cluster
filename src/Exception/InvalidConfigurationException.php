@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Boesing\ZendCacheRedisCluster\Exception;
 
-use Zend\Cache\Exception\InvalidArgumentException;
+use Laminas\Cache\Exception\InvalidArgumentException;
 
 use function sprintf;
 

@@ -9,8 +9,8 @@ use Boesing\ZendCacheRedisCluster\RedisClusterResourceManager;
 use PHPUnit\Framework\TestCase;
 use RedisCluster;
 use SplObjectStorage;
-use Zend\Cache\Storage\Adapter\AbstractAdapter;
-use Zend\Cache\Storage\Plugin\Serializer;
+use Laminas\Cache\Storage\Adapter\AbstractAdapter;
+use Laminas\Cache\Storage\Plugin\Serializer;
 
 use function uniqid;
 

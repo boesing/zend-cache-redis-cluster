@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Boesing\ZendCacheRedisCluster\Exception;
 
-use Zend\Cache\Exception\InvalidArgumentException as ZendCacheInvalidArgumentException;
+use Laminas\Cache\Exception\InvalidArgumentException as LaminasCacheInvalidArgumentException;
 
-final class InvalidArgumentException extends ZendCacheInvalidArgumentException
+final class InvalidArgumentException extends LaminasCacheInvalidArgumentException
 {
 }

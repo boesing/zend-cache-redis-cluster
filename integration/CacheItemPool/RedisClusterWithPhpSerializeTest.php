@@ -8,7 +8,7 @@ use Boesing\ZendCacheRedisClusterIntegration\RedisClusterStorageCreationTrait;
 use Cache\IntegrationTests\CachePoolTest;
 use Psr\Cache\CacheItemPoolInterface;
 use RedisCluster;
-use Zend\Cache\Psr\CacheItemPool\CacheItemPoolDecorator;
+use Laminas\Cache\Psr\CacheItemPool\CacheItemPoolDecorator;
 
 use function get_class;
 use function sprintf;

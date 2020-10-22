@@ -8,7 +8,7 @@ use Boesing\ZendCacheRedisClusterIntegration\RedisClusterStorageCreationTrait;
 use Cache\IntegrationTests\SimpleCacheTest;
 use Psr\SimpleCache\CacheInterface;
 use RedisCluster;
-use Zend\Cache\Psr\SimpleCache\SimpleCacheDecorator;
+use Laminas\Cache\Psr\SimpleCache\SimpleCacheDecorator;
 
 final class RedisClusterWithoutSerializerTest extends SimpleCacheTest
 {

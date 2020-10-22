@@ -9,11 +9,11 @@ use RedisCluster as RedisClusterFromExtension;
 use RedisClusterException;
 use RedisException;
 use stdClass;
-use Zend\Cache\Storage\Adapter\AbstractAdapter;
-use Zend\Cache\Storage\Capabilities;
-use Zend\Cache\Storage\ClearByNamespaceInterface;
-use Zend\Cache\Storage\ClearByPrefixInterface;
-use Zend\Cache\Storage\FlushableInterface;
+use Laminas\Cache\Storage\Adapter\AbstractAdapter;
+use Laminas\Cache\Storage\Capabilities;
+use Laminas\Cache\Storage\ClearByNamespaceInterface;
+use Laminas\Cache\Storage\ClearByPrefixInterface;
+use Laminas\Cache\Storage\FlushableInterface;
 
 use function count;
 use function version_compare;

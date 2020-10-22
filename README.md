@@ -4,7 +4,7 @@
 [![Coverage Status](https://coveralls.io/repos/github/boesing/zend-cache-redis-cluster/badge.svg?branch=master)](https://coveralls.io/github/boesing/zend-cache-redis-cluster?branch=master)
 
 
-`zendframework/zend-cache` adapter to provide `RedisCluster` support to projects using `zend-cache`.
+`laminas/laminas-cache` adapter to provide `RedisCluster` support to projects using `zend-cache`.
 
 
 ## Installation
