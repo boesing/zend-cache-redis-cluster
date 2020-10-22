@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Boesing\ZendCacheRedisCluster;
+namespace Boesing\Laminas\Cache\Storage\Adapter\RedisCluster;
 
-use Boesing\ZendCacheRedisCluster\Exception\InvalidConfigurationException;
+use Boesing\Laminas\Cache\Storage\Adapter\RedisCluster\Exception\InvalidConfigurationException;
 use Webmozart\Assert\Assert;
 
 use function ini_get;

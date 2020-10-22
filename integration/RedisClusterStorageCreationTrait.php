@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Boesing\ZendCacheRedisClusterIntegration;
+namespace Boesing\Laminas\Cache\Storage\Adapter\RedisClusterIntegration;
 
-use Boesing\ZendCacheRedisCluster\RedisCluster;
+use Boesing\Laminas\Cache\Storage\Adapter\RedisCluster\RedisCluster;
 use RedisCluster as RedisClusterFromExtension;
 use RuntimeException;
 use Laminas\Cache\Storage\Plugin\Serializer;

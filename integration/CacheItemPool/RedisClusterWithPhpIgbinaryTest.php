@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Boesing\ZendCacheRedisClusterIntegration\CacheItemPool;
+namespace Boesing\Laminas\Cache\Storage\Adapter\RedisClusterIntegration\CacheItemPool;
 
-use Boesing\ZendCacheRedisClusterIntegration\RedisClusterStorageCreationTrait;
+use Boesing\Laminas\Cache\Storage\Adapter\RedisClusterIntegration\RedisClusterStorageCreationTrait;
 use Cache\IntegrationTests\CachePoolTest;
 use Psr\Cache\CacheItemPoolInterface;
 use RedisCluster;

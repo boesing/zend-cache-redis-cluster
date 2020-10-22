@@ -1,22 +1,19 @@
-# zend-cache-redis-cluster
-
-[![Build Status](https://travis-ci.org/boesing/zend-cache-redis-cluster.svg?branch=master)](https://travis-ci.org/boesing/zend-cache-redis-cluster)
-[![Coverage Status](https://coveralls.io/repos/github/boesing/zend-cache-redis-cluster/badge.svg?branch=master)](https://coveralls.io/github/boesing/zend-cache-redis-cluster?branch=master)
+# laminas-cache-storage-adapter-redis-cluster
 
 
-`laminas/laminas-cache` adapter to provide `RedisCluster` support to projects using `zend-cache`.
+`laminas/laminas-cache` adapter to provide `RedisCluster` support to projects using `laminas-cache`.
 
 
 ## Installation
 
 ```bash
-composer require boesing/zend-cache-redis-cluster
+composer require boesing/laminas-cache-storage-adapter-redis-cluster
 ```
 
 ## Configuration
 
 ```php
-use Boesing\ZendCacheRedisCluster\RedisCluster;
+use Boesing\Laminas\Cache\Storage\Adapter\RedisCluster\RedisCluster;
 
 return [
     'caches' => [

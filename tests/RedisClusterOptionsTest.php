@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Boesing\ZendCacheRedisClusterTest;
+namespace Boesing\Laminas\Cache\Storage\Adapter\RedisClusterTest;
 
-use Boesing\ZendCacheRedisCluster\Exception\InvalidConfigurationException;
-use Boesing\ZendCacheRedisCluster\RedisClusterOptions;
+use Boesing\Laminas\Cache\Storage\Adapter\RedisCluster\Exception\InvalidConfigurationException;
+use Boesing\Laminas\Cache\Storage\Adapter\RedisCluster\RedisClusterOptions;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 

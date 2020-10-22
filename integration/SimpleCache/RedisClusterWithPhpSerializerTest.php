@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Boesing\ZendCacheRedisClusterIntegration\SimpleCache;
+namespace Boesing\Laminas\Cache\Storage\Adapter\RedisClusterIntegration\SimpleCache;
 
-use Boesing\ZendCacheRedisClusterIntegration\RedisClusterStorageCreationTrait;
+use Boesing\Laminas\Cache\Storage\Adapter\RedisClusterIntegration\RedisClusterStorageCreationTrait;
 use Cache\IntegrationTests\SimpleCacheTest;
 use Psr\SimpleCache\CacheInterface;
 use RedisCluster;

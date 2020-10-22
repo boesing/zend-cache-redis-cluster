@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Boesing\ZendCacheRedisCluster;
+namespace Boesing\Laminas\Cache\Storage\Adapter\RedisCluster;
 
-use Boesing\ZendCacheRedisCluster\Exception\RuntimeException;
+use Boesing\Laminas\Cache\Storage\Adapter\RedisCluster\Exception\RuntimeException;
 use RedisCluster as RedisClusterFromExtension;
 use RedisClusterException;
 use ReflectionClass;

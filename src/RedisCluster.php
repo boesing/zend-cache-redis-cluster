@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Boesing\ZendCacheRedisCluster;
+namespace Boesing\Laminas\Cache\Storage\Adapter\RedisCluster;
 
 use Redis;
 use RedisCluster as RedisClusterFromExtension;

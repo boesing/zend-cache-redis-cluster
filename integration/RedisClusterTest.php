@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Boesing\ZendCacheRedisClusterIntegration;
+namespace Boesing\Laminas\Cache\Storage\Adapter\RedisClusterIntegration;
 
-use Boesing\ZendCacheRedisCluster\RedisCluster;
-use Boesing\ZendCacheRedisCluster\RedisClusterOptions;
+use Boesing\Laminas\Cache\Storage\Adapter\RedisCluster\RedisCluster;
+use Boesing\Laminas\Cache\Storage\Adapter\RedisCluster\RedisClusterOptions;
 use PHPUnit\Framework\TestCase;
 use RedisCluster as RedisClusterFromExtension;
 use Laminas\Cache\Storage\Adapter\AbstractAdapter;
